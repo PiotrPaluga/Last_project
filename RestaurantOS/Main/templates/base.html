@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+<div class="top-label">
+    <h1 id="main-title">RestaurantOS</h1>
+    <a href="" id="restaurant-button">Restauracje</a>
+    <a href="" id="login-button">Zaloguj</a>
+</div>
+{% block content %}
+{% endblock %}
+<footer class="footer">
+    <p>Piotr Paluga 2023 All rights reserved!</p>
+</footer>
+</body>
+</html>

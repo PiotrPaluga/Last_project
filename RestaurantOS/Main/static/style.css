@@ -1,0 +1,47 @@
+body{
+    background-color: #777777;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #666666;
+    color: #e0e3e0;
+    padding: 5px 10px;
+}
+
+.top-label {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #666666;
+}
+
+.top-label h1 {
+    text-align: center;
+    color: #e0e3e0;
+}
+
+.top-label #restaurant-button {
+    text-decoration: none;
+    padding: 0 10px 10px 5px;
+    background-color: #666666;
+    border-radius: 0 0 10px 0;
+    color: #e0e3e0;
+}
+
+#login-button {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #4f4f4f;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-right: 5px;
+    color: #e0e3e0;
+}
