@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Python Restaurants</title>
     <meta charset="UTF-8">
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
 </head>
 <body>
-<div class="top-label">
-    <h1 id="main-title">RestaurantOS</h1>
-    <a href="" id="restaurant-button">Restauracje</a>
+
+<div class="header">
+    <h1 id="main-title">Python Restaurants</h1>
+    <a href="" class="header-btn">Restauracje</a>
+    <a href="" class="header-btn">Kontakt</a>
     <a href="" id="login-button">Zaloguj</a>
 </div>
-{% block content %}
-{% endblock %}
+
+<div class="contentblock">
+    {% block content %}
+    {% endblock %}
+</div>
+
 <footer class="footer">
     <p>Piotr Paluga 2023 All rights reserved!</p>
 </footer>
+
 </body>
 </html>

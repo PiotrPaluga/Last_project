@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 id="res-name">{{ restaurant.name }}</h1>
+<div class="restaurant-view">
+    <div>
+        <p>Godzina otwarcia: </p>
+        <p>Godzina zamkniecia:</p>
+        <p>Liczba miejsc:</p>
+    </div>
+    <div>
+        <h3>Dane kontaktowe:</h3>
+        <p>Adres: {{ restaurant.address }}</p>
+        <p>Telefon: {{ restaurant.phone_number }}</p>
+        <p>Email: {{ restaurant.email }}</p>
+    </div>
+</div>
+{% endblock %}

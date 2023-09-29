@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for restaurant in restaurants %}
+<div class="res-div">
+    <a href="restaurant/{{ restaurant.id }}"> {{ restaurant.name}} {{ restaurant.address }}</a>
+</div>
+{% endfor %}
+
+{% endblock %}
