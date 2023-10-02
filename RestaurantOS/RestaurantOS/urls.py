@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from Main.views import MainView, RestaurantView
+from Main.views import MainView, RestaurantView, SupportView, reservation_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,6 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', MainView.as_view(), name='base-view'),
     path('restaurant/<int:restaurant_id>/', RestaurantView.as_view()),
+    path('support/', SupportView.as_view(), name="support"),
+    path('restaurant/<int:restaurant_id>/reservation', reservation_view),
 ]
 
 if settings.DEBUG:

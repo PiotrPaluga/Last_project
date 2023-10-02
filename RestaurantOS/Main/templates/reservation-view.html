@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center-div">
+    <h2>Zarezerwuj stolik w {{ restaurant.name }}</h2>
+    {% if form %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input id="submit" type="submit" value="Zarezerwuj">
+    </form>
+    {% endif %}
+
+    {% if name %}
+    <h3>Udalo sie zarezerwowac stolik!</h3>
+    <p> {{ name }}</p>
+    <p> Osoby: {{ participants }}</p>
+    <p> {{ date|date:"d/m/Y" }} {{ hour|time:"H:i" }}</p>
+    {% endif %}
+</div>
+{% endblock %}

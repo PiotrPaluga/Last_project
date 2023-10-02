@@ -31,7 +31,7 @@
 }
 
 #login-button {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
     background-color: #4f4f4f;
@@ -53,6 +53,7 @@
     padding: 30px 0;
     background: url("obraz.jpg") center;
     border: 1px solid #1b1b1b;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .res-div a {
@@ -61,18 +62,11 @@
     font-size: 24px;
     color: #1b1b1b;
     font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 4px 4px 8px #e0e3e0;
 }
 
-body{
+body {
     background-color: #777777;
-}
-
-.contentblock {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 #res-name {
@@ -81,8 +75,42 @@ body{
 }
 
 .restaurant-view {
+    position: relative;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    background-color: #006b1b;
+    background-color: #4f4f4f;
+    border: solid 1px #1b1b1b;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
+.reserv-btn {
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    text-decoration: none;
+    color: #e0e3e0;
+    border: solid 1px #000000;
+    border-radius: 10px;
+    background-color: #222222;
+    padding: 5px 10px;
+}
+
+.center-div {
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+    background-color: #4f4f4f;
+    border: solid 1px #1b1b1b;
+    padding: 5px;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 20%);
+}
+
+.center-div #submit {
+    position: relative;
+    bottom: 3%;
+    left: 50%;
+    transform: translate(-50%, 0);
 }

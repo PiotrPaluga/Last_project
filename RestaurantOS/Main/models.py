@@ -11,27 +11,22 @@ class Restaurant(models.Model):
 class Hours(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     day = models.CharField(max_length=32)
-    open_hour = models.TimeField()
-    close_hour = models.TimeField()
+    open_hour = models.TimeField(null=True)
+    close_hour = models.TimeField(null=True)
 
 
 class Tables(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     table_nr = models.CharField(max_length=64)
-    min_cap = models.IntegerField
-    max_cap = models.IntegerField
-
-
-class Guest(models.Model):
-    guest_name = models.CharField(max_length=64)
-    guest_phone = models.CharField(max_length=16)
+    min_cap = models.IntegerField(null=True)
+    max_cap = models.IntegerField(null=True)
 
 
 class Reservation(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
+    guest = models.CharField(max_length=64)
     table = models.ForeignKey(Tables, on_delete=models.CASCADE)
-    date = models.DateField
-    participants = models.IntegerField
-    start = models.TimeField
-    end = models.TimeField
+    date = models.DateField(null=True)
+    participants = models.IntegerField(null=True)
+    start = models.TimeField(null=True)
+    end = models.TimeField(null=True)

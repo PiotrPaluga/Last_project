@@ -3,12 +3,19 @@
 {% block content %}
 <h1 id="res-name">{{ restaurant.name }}</h1>
 <div class="restaurant-view">
-    <div>
+    <div class="res-view-left">
         <p>Godzina otwarcia: </p>
-        <p>Godzina zamkniecia:</p>
+        <p>Pon.</p>
+        <p>Wt.</p>
+        <p>Sr.</p>
+        <p>Czw.</p>
+        <p>Pt.</p>
+        <p>Sob.</p>
+        <p>Nd.</p>
         <p>Liczba miejsc:</p>
+        <a href="/restaurant/{{ restaurant.id }}/reservation" class="reserv-btn">Zarezerwuj Stolik</a>
     </div>
-    <div>
+    <div class="res-view-right">
         <h3>Dane kontaktowe:</h3>
         <p>Adres: {{ restaurant.address }}</p>
         <p>Telefon: {{ restaurant.phone_number }}</p>
