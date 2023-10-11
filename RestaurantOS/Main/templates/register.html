@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center-div">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form %}
+        <input id="submit" type="submit" value="Zarejestruj">
+        {% endif %}
+    </form>
+    {{ err }}
+</div>
+{% endblock %}

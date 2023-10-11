@@ -9,14 +9,28 @@
 <body>
 
 <div class="header">
+    <div class="hd-left">
+        <a href="/" class="header-btn">Restauracje</a>
+        <a href="/support/" class="header-btn">Kontakt</a>
+        {% if user.is_superuser %}
+        <a href="/restaurant/add/" class="header-btn">Dodaj restauracje</a>
+        <a href="/edit/" class="header-btn">Edytuj restauracje</a>
+        {% endif %}
+    </div>
     <h1 id="main-title">Python Restaurants</h1>
-    <a href="/" class="header-btn">Restauracje</a>
-    <a href="/support/" class="header-btn">Kontakt</a>
-    <a href="" id="login-button">Zaloguj</a>
+    <div class="hd-right">
+        {% if user.is_authenticated %}
+        <a href="/user_panel/" class="header-btn">Panel uzytkownika</a>
+        <a href="/logout/" class="header-btn">Wyloguj</a>
+        {% else %}
+        <a href="/register/" class="header-btn">Zarejestruj</a>
+        <a href="/login/" class="header-btn">Zaloguj</a>
+        {% endif %}
+    </div>
 </div>
 
-    {% block content %}
-    {% endblock %}
+{% block content %}
+{% endblock %}
 
 <footer class="footer">
     <p>Piotr Paluga 2023 All rights reserved!</p>

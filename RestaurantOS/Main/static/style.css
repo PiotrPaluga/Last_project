@@ -1,18 +1,8 @@
-.footer {
-    position: fixed;
-    font-size: 8px;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: #666666;
-    color: #e0e3e0;
-    padding: 3px 6px;
-}
-
 .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     position: relative;
-    top: 0;
-    left: 0;
     width: 100%;
     background-color: #666666;
 }
@@ -28,19 +18,26 @@
     background-color: #666666;
     border-radius: 0 0 10px 10px;
     color: #e0e3e0;
+    transform: translate(0, 50%);
 }
 
-#login-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: #4f4f4f;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    margin-top: 5px;
-    margin-right: 5px;
-    color: #e0e3e0;
+.hd-left {
+    display: flex;
+    align-items: flex-end;
+}
+
+.hd-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.hd-left a{
+    margin-right: 3px;
+}
+
+.hd-right a{
+    margin-left: 3px;
 }
 
 .res-div {
@@ -113,4 +110,16 @@ body {
     bottom: 3%;
     left: 50%;
     transform: translate(-50%, 0);
+}
+
+
+.footer {
+    position: fixed;
+    font-size: 8px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #666666;
+    color: #e0e3e0;
+    padding: 3px 6px;
 }

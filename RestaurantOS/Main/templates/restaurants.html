@@ -4,7 +4,11 @@
 
 {% for restaurant in restaurants %}
 <div class="res-div">
-    <a href="restaurant/{{ restaurant.id }}"> {{ restaurant.name}} {{ restaurant.address }}</a>
+    {% if edit %}
+    <a href="/restaurant/{{ restaurant.id }}/edit">Edytuj {{ restaurant.name}} {{ restaurant.address }}</a>
+    {% else %}
+    <a href="/restaurant/{{ restaurant.id }}/"> {{ restaurant.name}} {{ restaurant.address }}</a>
+    {% endif %}
 </div>
 {% endfor %}
 

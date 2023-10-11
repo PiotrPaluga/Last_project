@@ -11,11 +11,16 @@
     </form>
     {% endif %}
 
+    {% if err %}
+    <h3>{{ err }}</h3>
+    <a href="/restaurant/{{ restaurant.id }}/reservation">Cofnij</a>
+    {% endif %}
+
     {% if name %}
     <h3>Udalo sie zarezerwowac stolik!</h3>
     <p> {{ name }}</p>
     <p> Osoby: {{ participants }}</p>
-    <p> {{ date|date:"d/m/Y" }} {{ hour|time:"H:i" }}</p>
+    <p> {{ date|date:"d/m/Y" }} {{ start_hour }} - {{ end_hour }}</p>
     {% endif %}
 </div>
 {% endblock %}
