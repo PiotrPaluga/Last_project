@@ -4,7 +4,12 @@ from .models import Restaurant, Hours, Tables, HOUR_CHOICES, Reservation
 from .forms import ReservationForm, LoginForm, RegisterForm, ModifyRestaurantForm, TableEditForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+
+def is_superuser(user):
+    return user.is_superuser
 
 
 class MainView(View):
@@ -66,7 +71,7 @@ def reservation_view(request, restaurant_id):
                               {'restaurant': restaurant, 'err': "Brak dostepnych stolikow na dana godzine."})
     else:
         form = ReservationForm()
-        form.fields['start_hour'].choices = HOUR_CHOICES[10:40]
+        form.fields['start_hour'].choices = HOUR_CHOICES[10:48]
         return render(request, 'reservation-view.html', {'form': form, 'restaurant': restaurant,
                                                          'user': active_user})
 
@@ -123,6 +128,7 @@ def register_view(request):
         return render(request, "register.html", {'form': form})
 
 
+@user_passes_test(is_superuser)
 def add_restaurant(request):
     if request.method == 'POST':
         form = ModifyRestaurantForm(request.POST)
@@ -157,6 +163,7 @@ def add_restaurant(request):
         return render(request, "edit-restaurant.html", {'form': form, 'button': "Dodaj"})
 
 
+@user_passes_test(is_superuser)
 def edit_restaurant(request, restaurant_id):
     res = Restaurant.objects.get(id=restaurant_id)
     res_pon_czw = Hours.objects.get(restaurant_id=restaurant_id, day=1)
@@ -212,25 +219,34 @@ def edit_restaurant(request, restaurant_id):
         return render(request, "edit-restaurant.html", {'form': form, 'button': "Edytuj"})
 
 
+@user_passes_test(is_superuser)
 def delete_restaurant(request, restaurant_id):
     restaurant = Restaurant.objects.get(id=restaurant_id)
     restaurant.delete()
     return redirect('edit-list')
 
 
-class EditList(View):
+class EditList(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
     def get(self, request):
         restaurants = Restaurant.objects.all().order_by('id')
         return render(request, 'restaurants.html', {'restaurants': restaurants, 'edit': 'edit'})
 
 
-class TablesView(View):
+class TablesView(UserPassesTestMixin, View):
+
     def get(self, request, restaurant_id):
         restaurant = Restaurant.objects.get(id=restaurant_id)
         tables = Tables.objects.filter(restaurant_id=restaurant_id)
         return render(request, 'tables-view.html', {'tables': tables, 'restaurant': restaurant})
 
+    def test_func(self):
+        return self.request.user.is_superuser
 
+
+@user_passes_test(is_superuser)
 def table_edit(request, restaurant_id, table_id):
     table = Tables.objects.get(id=table_id, restaurant_id=restaurant_id)
     if request.method == 'POST':
@@ -250,6 +266,7 @@ def table_edit(request, restaurant_id, table_id):
         return render(request, 'edit-table.html', {'form': form, 'button': "Edytuj"})
 
 
+@user_passes_test(is_superuser)
 def table_add(request, restaurant_id):
     if request.method == 'POST':
         form = TableEditForm(request.POST)
@@ -266,10 +283,12 @@ def table_add(request, restaurant_id):
         return render(request, 'edit-table.html', {'form': form, 'button': "Dodaj"})
 
 
+@user_passes_test(is_superuser)
 def table_delete(request, restaurant_id, table_id):
     table = Tables.objects.get(id=table_id, restaurant_id=restaurant_id)
     table.delete()
     return redirect(f'/restaurant/{restaurant_id}/tables/')
+
 
 @login_required
 def user_panel(request):
@@ -277,14 +296,15 @@ def user_panel(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data['firstname']
-            last_name = form.cleaned_data['lastname']
+            first = form.cleaned_data['firstname']
+            last = form.cleaned_data['lastname']
             email = form.cleaned_data['email']
-            active_user.first_name = first_name
-            active_user.last_name = last_name
+            active_user.first_name = first
+            active_user.last_name = last
             active_user.email = email
             active_user.save()
             return redirect('user-panel')
+        return redirect('user-panel')
 
     else:
         reservations = Reservation.objects.filter(guest=active_user)
@@ -298,6 +318,7 @@ def user_panel(request):
                                                   'reservations': reservations, 'hours': HOUR_CHOICES})
 
 
+@login_required
 def delete_reservation(request, reservation_id):
     reservation = Reservation.objects.get(id=reservation_id)
     reservation.delete()

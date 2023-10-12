@@ -7,7 +7,8 @@ class ReservationForm(forms.Form):
     date = forms.DateField(label='Data (DD/MM/YYYY)', input_formats=['%d/%m/%Y', '%d.%m.%Y', '%d-%m-%Y'])
     start_hour = forms.ChoiceField(label='Godzina rozpoczecia', choices=HOUR_CHOICES)
     duration = forms.ChoiceField(label='Czas trwania',
-                                 choices=('00:30', '01:00', '01:30', '02:00', '02:30', '03:00'))
+                                 choices=(
+                                 (1, '00:30'), (2, '01:00'), (3, '01:30'), (4, '02:00'), (5, '02:30'), (6, '03:00')))
 
 
 class LoginForm(forms.Form):
