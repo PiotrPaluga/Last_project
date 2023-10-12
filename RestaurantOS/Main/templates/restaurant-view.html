@@ -5,14 +5,12 @@
 <div class="restaurant-view">
     <div class="res-view-left">
         <p>Godzina otwarcia: </p>
-        <p>Pon.</p>
-        <p>Wt.</p>
-        <p>Sr.</p>
-        <p>Czw.</p>
-        <p>Pt.</p>
-        <p>Sob.</p>
-        <p>Nd.</p>
-        <p>Liczba miejsc:</p>
+        <p>Pon - Czw: {{ hours.0 }} - {{ hours.1 }}</p>
+        <p>Pt - Sob: {{ hours.2 }} - {{ hours.3 }}</p>
+        <p>Nd: {{ hours.4 }} - {{ hours.5 }}</p>
+        {% if user.is_superuser %}
+        <a href="/restaurant/{{ restaurant.id }}/tables" class="btn">Zarządzaj stolikami</a>
+        {% endif %}
         <a href="/restaurant/{{ restaurant.id }}/reservation" class="reserv-btn">Zarezerwuj Stolik</a>
     </div>
     <div class="res-view-right">

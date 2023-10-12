@@ -6,6 +6,8 @@
 <div class="res-div">
     {% if edit %}
     <a href="/restaurant/{{ restaurant.id }}/edit">Edytuj {{ restaurant.name}} {{ restaurant.address }}</a>
+    <p></p>
+    <a href="/restaurant/{{ restaurant.id }}/delete">Usuń restaurację</a>
     {% else %}
     <a href="/restaurant/{{ restaurant.id }}/"> {{ restaurant.name}} {{ restaurant.address }}</a>
     {% endif %}

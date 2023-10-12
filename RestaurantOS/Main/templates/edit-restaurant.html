@@ -3,9 +3,18 @@
 {% block content %}
 <div class="center-div">
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
         {% if form %}
+        <h3>Dane restauracji:</h3>
+        {% csrf_token %}
+        <p>{{ form.name.label }} : {{ form.name }}</p>
+        <p>{{ form.address.label }} : {{ form.address }}</p>
+        <p>{{ form.phone_number.label }} : {{ form.phone_number }}</p>
+        <p>{{ form.email.label }} : {{ form.email }}</p>
+
+        <h3>Godziny otwarcia:</h3>
+        <p>{{ form.pon_czw_start.label }} : {{ form.pon_czw_start }} - {{ form.pon_czw_end }}</p>
+        <p>{{ form.pt_sob_start.label }} : {{ form.pt_sob_start }} - {{ form.pt_sob_end }}</p>
+        <p>{{ form.nd_start.label }} : {{ form.nd_start }} - {{ form.nd_end }}</p>
         <input id="submit" type="submit" value="{{ button }}">
         {% endif %}
     </form>

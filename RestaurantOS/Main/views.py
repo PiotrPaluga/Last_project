@@ -1,9 +1,10 @@
 from django.views import View
 from django.shortcuts import render, redirect, HttpResponse
 from .models import Restaurant, Hours, Tables, HOUR_CHOICES, Reservation
-from .forms import ReservationForm, LoginForm, RegisterForm, ModifyRestaurantForm
+from .forms import ReservationForm, LoginForm, RegisterForm, ModifyRestaurantForm, TableEditForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 
 class MainView(View):
@@ -15,54 +16,59 @@ class MainView(View):
 class RestaurantView(View):
     def get(self, request, restaurant_id):
         restaurant = Restaurant.objects.get(id=restaurant_id)
-        return render(request, "restaurant-view.html", {'restaurant': restaurant})
+        hours = Hours.objects.filter(restaurant_id=restaurant_id)
+        true_hours = []
+        for hour in hours:
+            true_hours.append(HOUR_CHOICES[int(hour.open_hour)][1])
+            true_hours.append(HOUR_CHOICES[int(hour.close_hour)][1])
+        return render(request, "restaurant-view.html",
+                      {'restaurant': restaurant, 'hours': true_hours})
 
 
+@login_required
 def reservation_view(request, restaurant_id):
     restaurant = Restaurant.objects.get(id=restaurant_id)
+    active_user = request.user
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
             # pobieranie danych z formularza
-            name = form.cleaned_data['name']
             participants = form.cleaned_data['participants']
             date = form.cleaned_data['date']
             start_hour_num = form.cleaned_data['start_hour']
             duration = form.cleaned_data['duration']
+
             # przetwarzanie godziny z liczby na czas do wywietlenia na stronie
-            start_hour = HOUR_CHOICES[int(start_hour_num) - 1][1]
+            start_hour = HOUR_CHOICES[int(start_hour_num)][1]
             end_hour_num = int(start_hour_num) + int(duration[0])
-            end_hour = HOUR_CHOICES[int(end_hour_num) - 1][1]
+            end_hour = HOUR_CHOICES[int(end_hour_num)][1]
+
             # szukanie wolnego stolika
             reservated_tables = Tables.objects.filter(
                 restaurant_id=restaurant_id,
                 reservation__start_hour__gte=start_hour_num,
-                reservation__end_hour__lte=end_hour_num
+                reservation__end_hour__lte=end_hour_num,
+                reservation__date=date
             )
             free_tables = Tables.objects.filter(restaurant_id=restaurant_id, max_cap__gte=participants,
                                                 min_cap__lte=participants).exclude(id__in=reservated_tables)
             if free_tables:
                 table = free_tables[0]
-                new_res = Reservation(restaurant_id=restaurant_id, guest=name, table=table, date=date,
+                new_res = Reservation(restaurant_id=restaurant_id, guest=active_user, table=table, date=date,
                                       participants=participants, start_hour=start_hour_num, end_hour=end_hour_num)
                 new_res.save()
                 return render(request, 'reservation-view.html', {'restaurant': restaurant,
-                                                                 'name': name, 'participants': participants,
+                                                                 'participants': participants,
                                                                  'date': date,
                                                                  'start_hour': start_hour, 'end_hour': end_hour})
             else:
                 return render(request, 'reservation-view.html',
                               {'restaurant': restaurant, 'err': "Brak dostepnych stolikow na dana godzine."})
     else:
-        if request.user.is_authenticated:
-            name = request.user.first_name + " " + request.user.last_name
-            form = ReservationForm(initial={'name': name})
-            form.fields['name'].widget.attrs['readonly'] = True
-            form.fields['start_hour'].choices = HOUR_CHOICES[10:40]
-            return render(request, 'reservation-view.html', {'form': form, 'restaurant': restaurant})
         form = ReservationForm()
         form.fields['start_hour'].choices = HOUR_CHOICES[10:40]
-        return render(request, 'reservation-view.html', {'form': form, 'restaurant': restaurant})
+        return render(request, 'reservation-view.html', {'form': form, 'restaurant': restaurant,
+                                                         'user': active_user})
 
 
 class SupportView(View):
@@ -121,12 +127,28 @@ def add_restaurant(request):
     if request.method == 'POST':
         form = ModifyRestaurantForm(request.POST)
         if form.is_valid():
+            # Dane restauracji:-----------------------------------------
             name = form.cleaned_data['name']
             address = form.cleaned_data['address']
             phone_num = form.cleaned_data['phone_number']
             email = form.cleaned_data['email']
+            # Godziny otwarcia:-----------------------------------------
+            pon_czw_start = form.cleaned_data['pon_czw_start']
+            pon_czw_end = form.cleaned_data['pon_czw_end']
+            pt_sob_start = form.cleaned_data['pt_sob_start']
+            pt_sob_end = form.cleaned_data['pt_sob_end']
+            nd_start = form.cleaned_data['nd_start']
+            nd_end = form.cleaned_data['nd_end']
+            # Tworzenie obiektów i zapisywanie ich w bazie:-------------
             new_res = Restaurant(name=name, address=address, phone_number=phone_num, email=email)
             new_res.save()
+            new_res_pon_czw = Hours(restaurant_id=new_res.id, day=1, open_hour=pon_czw_start, close_hour=pon_czw_end)
+            new_res_pon_czw.save()
+            new_res_pt_sob = Hours(restaurant_id=new_res.id, day=2, open_hour=pt_sob_start, close_hour=pt_sob_end)
+            new_res_pt_sob.save()
+            new_res_nd = Hours(restaurant_id=new_res.id, day=3, open_hour=nd_start, close_hour=nd_end)
+            new_res_nd.save()
+
             msg = "Twoja restauracja została dodana!"
             return render(request, "edit-restaurant.html", {'err': msg})
 
@@ -137,25 +159,63 @@ def add_restaurant(request):
 
 def edit_restaurant(request, restaurant_id):
     res = Restaurant.objects.get(id=restaurant_id)
+    res_pon_czw = Hours.objects.get(restaurant_id=restaurant_id, day=1)
+    res_pt_sob = Hours.objects.get(restaurant_id=restaurant_id, day=2)
+    res_nd = Hours.objects.get(restaurant_id=restaurant_id, day=3)
     if request.method == 'POST':
         form = ModifyRestaurantForm(request.POST)
         if form.is_valid():
+            # Dane restauracji:------------------------------------
             name = form.cleaned_data['name']
             address = form.cleaned_data['address']
             phone_num = form.cleaned_data['phone_number']
             email = form.cleaned_data['email']
+            # Godziny otwarcia: -----------------------------------
+            pon_czw_start = form.cleaned_data['pon_czw_start']
+            pon_czw_end = form.cleaned_data['pon_czw_end']
+            pt_sob_start = form.cleaned_data['pt_sob_start']
+            pt_sob_end = form.cleaned_data['pt_sob_end']
+            nd_start = form.cleaned_data['nd_start']
+            nd_end = form.cleaned_data['nd_end']
+            # Edycja bazy danych:----------------------------------
             res.name = name
             res.address = address
             res.phone_number = phone_num
             res.email = email
             res.save()
+            res_pon_czw.open_hour = pon_czw_start
+            res_pon_czw.close_hour = pon_czw_end
+            res_pon_czw.save()
+            res_pt_sob.open_hour = pt_sob_start
+            res_pt_sob.close_hour = pt_sob_end
+            res_pt_sob.save()
+            res_nd.open_hour = nd_start
+            res_nd.close_hour = nd_end
+            res_nd.save()
             msg = "Zmiany zostały zapisane!"
             return render(request, "edit-restaurant.html", {'err': msg})
 
     else:
-        form = ModifyRestaurantForm(initial={'name': res.name, 'address': res.address, 'phone_number': res.phone_number,
-                                             'email': res.email})
+        initials = {
+            'name': res.name,
+            'address': res.address,
+            'phone_number': res.phone_number,
+            'email': res.email,
+            'pon_czw_start': res_pon_czw.open_hour,
+            'pon_czw_end': res_pon_czw.close_hour,
+            'pt_sob_start': res_pt_sob.open_hour,
+            'pt_sob_end': res_pt_sob.close_hour,
+            'nd_start': res_nd.open_hour,
+            'nd_end': res_nd.close_hour
+        }
+        form = ModifyRestaurantForm(initial=initials)
         return render(request, "edit-restaurant.html", {'form': form, 'button': "Edytuj"})
+
+
+def delete_restaurant(request, restaurant_id):
+    restaurant = Restaurant.objects.get(id=restaurant_id)
+    restaurant.delete()
+    return redirect('edit-list')
 
 
 class EditList(View):
@@ -163,3 +223,82 @@ class EditList(View):
         restaurants = Restaurant.objects.all().order_by('id')
         return render(request, 'restaurants.html', {'restaurants': restaurants, 'edit': 'edit'})
 
+
+class TablesView(View):
+    def get(self, request, restaurant_id):
+        restaurant = Restaurant.objects.get(id=restaurant_id)
+        tables = Tables.objects.filter(restaurant_id=restaurant_id)
+        return render(request, 'tables-view.html', {'tables': tables, 'restaurant': restaurant})
+
+
+def table_edit(request, restaurant_id, table_id):
+    table = Tables.objects.get(id=table_id, restaurant_id=restaurant_id)
+    if request.method == 'POST':
+        form = TableEditForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            min_cap = form.cleaned_data['min_cap']
+            max_cap = form.cleaned_data['max_cap']
+            table.name = name
+            table.min_cap = min_cap
+            table.max_cap = max_cap
+            table.save()
+            return redirect(f'/restaurant/{restaurant_id}/tables/')
+
+    else:
+        form = TableEditForm(initial={'name': table.name, 'min_cap': table.min_cap, 'max_cap': table.max_cap})
+        return render(request, 'edit-table.html', {'form': form, 'button': "Edytuj"})
+
+
+def table_add(request, restaurant_id):
+    if request.method == 'POST':
+        form = TableEditForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            min_cap = form.cleaned_data['min_cap']
+            max_cap = form.cleaned_data['max_cap']
+            new_table = Tables(restaurant_id=restaurant_id, name=name, min_cap=min_cap, max_cap=max_cap)
+            new_table.save()
+            return redirect(f'/restaurant/{restaurant_id}/tables/')
+
+    else:
+        form = TableEditForm()
+        return render(request, 'edit-table.html', {'form': form, 'button': "Dodaj"})
+
+
+def table_delete(request, restaurant_id, table_id):
+    table = Tables.objects.get(id=table_id, restaurant_id=restaurant_id)
+    table.delete()
+    return redirect(f'/restaurant/{restaurant_id}/tables/')
+
+@login_required
+def user_panel(request):
+    active_user = request.user
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data['firstname']
+            last_name = form.cleaned_data['lastname']
+            email = form.cleaned_data['email']
+            active_user.first_name = first_name
+            active_user.last_name = last_name
+            active_user.email = email
+            active_user.save()
+            return redirect('user-panel')
+
+    else:
+        reservations = Reservation.objects.filter(guest=active_user)
+        initials = {
+            'firstname': active_user.first_name,
+            'lastname': active_user.last_name,
+            'email': active_user.email
+        }
+        form = RegisterForm(initial=initials)
+        return render(request, 'user-view.html', {'user': active_user, 'form': form,
+                                                  'reservations': reservations, 'hours': HOUR_CHOICES})
+
+
+def delete_reservation(request, reservation_id):
+    reservation = Reservation.objects.get(id=reservation_id)
+    reservation.delete()
+    return redirect('user-panel')

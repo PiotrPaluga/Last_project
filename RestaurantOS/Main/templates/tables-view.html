@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tables">
+    <a class="table" href="/restaurant/{{ restaurant.id }}/tables/add/">Dodaj stolik</a>
+    {% for table in tables %}
+    <div class="table">
+        <h3>{{ table.name }}</h3>
+        <p>Pojemność stolika:</p>
+        <p>{{ table.min_cap }} - {{ table.max_cap }}</p>
+        <a class="btn" href="/restaurant/{{ restaurant.id }}/tables/{{ table.id }}/edit">Edytuj stolik</a>
+        <a class="btn" href="/restaurant/{{ restaurant.id }}/tables/{{ table.id }}/delete">Usuń stolik</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

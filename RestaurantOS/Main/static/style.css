@@ -123,3 +123,29 @@ body {
     color: #e0e3e0;
     padding: 3px 6px;
 }
+
+.btn {
+    text-decoration: none;
+    background-color: #222222;
+    color: #e0e3e0;
+    border: 1px solid #1b1b1b;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+.tables {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.table {
+    background-color: sandybrown;
+    border: 1px solid #1b1b1b;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 10px;
+    text-align: center;
+}

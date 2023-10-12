@@ -6,6 +6,7 @@
     {% if form %}
     <form method="post">
         {% csrf_token %}
+        <p>Rezerwacja dla {{ user.first_name }} {{ user.last_name }}</p>
         {{ form.as_p }}
         <input id="submit" type="submit" value="Zarezerwuj">
     </form>
@@ -16,9 +17,9 @@
     <a href="/restaurant/{{ restaurant.id }}/reservation">Cofnij</a>
     {% endif %}
 
-    {% if name %}
+    {% if participants%}
     <h3>Udalo sie zarezerwowac stolik!</h3>
-    <p> {{ name }}</p>
+    <p> {{ user.first_name }} {{ user.last_name }}</p>
     <p> Osoby: {{ participants }}</p>
     <p> {{ date|date:"d/m/Y" }} {{ start_hour }} - {{ end_hour }}</p>
     {% endif %}
