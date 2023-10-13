@@ -5,10 +5,15 @@
     <form method="post">
         <h1>Witaj {{ user.first_name }} {{ user.last_name }}</h1>
         <h3>Twoje rezerwacje:</h3>
-        {% for reservation in reservations %}
-        <p style="display: inline-block">{{ reservation.table.name }} {{ reservation.date|date:"d/m/Y" }} {{ reservation.start_hour }} - {{ reservation.end_hour }}
-            {{ reservation.participants }} osób.</p> <a href="reservations/{{ reservation.id }}/delete"> Odwołaj</a>
-        {% endfor %}
+        {% if reservations %}
+            {% for reservation in reservations %}
+                <p style="display: inline-block">{{ reservation.table.name }} {{ reservation.date|date:"d/m/Y" }}
+                    {{ hours }} {{ reservation.participants }} osób.</p>
+                <a href="/reservations/{{ reservation.id }}/delete"> Odwołaj</a> </br>
+            {% endfor %}
+        {% else %}
+        <p>Brak aktywnych rezerwacji</p>
+        {% endif %}
         <h3>Edytuj swoje dane:</h3>
         {% csrf_token %}
         <p>{{ form.firstname.label }}{{ form.firstname }}</p>

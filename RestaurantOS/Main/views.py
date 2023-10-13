@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django import forms
 
 
 def is_superuser(user):
@@ -295,19 +296,23 @@ def user_panel(request):
     active_user = request.user
     if request.method == 'POST':
         form = RegisterForm(request.POST)
+        form.fields['username'].required = False
+        form.fields['password'].required = False
         if form.is_valid():
             first = form.cleaned_data['firstname']
             last = form.cleaned_data['lastname']
             email = form.cleaned_data['email']
-            active_user.first_name = first
-            active_user.last_name = last
-            active_user.email = email
-            active_user.save()
-            return redirect('user-panel')
+            request.user.first_name = first
+            request.user.last_name = last
+            request.user.email = email
+            request.user.save()
         return redirect('user-panel')
 
     else:
         reservations = Reservation.objects.filter(guest=active_user)
+        hours = []
+        for reservation in reservations:
+            hours.append((HOUR_CHOICES[reservation.start_hour][1], HOUR_CHOICES[reservation.end_hour][1]))
         initials = {
             'firstname': active_user.first_name,
             'lastname': active_user.last_name,
@@ -315,7 +320,7 @@ def user_panel(request):
         }
         form = RegisterForm(initial=initials)
         return render(request, 'user-view.html', {'user': active_user, 'form': form,
-                                                  'reservations': reservations, 'hours': HOUR_CHOICES})
+                                                  'reservations': reservations, 'hours': hours})
 
 
 @login_required

@@ -35,6 +35,9 @@ class Restaurant(models.Model):
     phone_number = models.CharField(max_length=16)
     email = models.CharField(max_length=64)
 
+    def __str__(self):
+        return self.name
+
 
 class Hours(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
@@ -49,6 +52,9 @@ class Tables(models.Model):
     min_cap = models.IntegerField()
     max_cap = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class Reservation(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
@@ -58,3 +64,6 @@ class Reservation(models.Model):
     participants = models.IntegerField()
     start_hour = models.IntegerField()
     end_hour = models.IntegerField()
+
+    def __str__(self):
+        return self.guest.first_name

@@ -10,6 +10,7 @@
 .header h1 {
     text-align: center;
     color: #e0e3e0;
+    flex: 1;
 }
 
 .header-btn {
