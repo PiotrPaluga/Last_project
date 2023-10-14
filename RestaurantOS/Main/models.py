@@ -34,6 +34,7 @@ class Restaurant(models.Model):
     address = models.CharField(max_length=64)
     phone_number = models.CharField(max_length=16)
     email = models.CharField(max_length=64)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

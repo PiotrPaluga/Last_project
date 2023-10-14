@@ -15,7 +15,7 @@ def is_superuser(user):
 
 class MainView(View):
     def get(self, request):
-        restaurants = Restaurant.objects.all().order_by('id')
+        restaurants = Restaurant.objects.filter(active=True).order_by('id')
         return render(request, "restaurants.html", {'restaurants': restaurants})
 
 
@@ -72,7 +72,7 @@ def reservation_view(request, restaurant_id):
                               {'restaurant': restaurant, 'err': "Brak dostepnych stolikow na dana godzine."})
     else:
         form = ReservationForm()
-        form.fields['start_hour'].choices = HOUR_CHOICES[10:48]
+        form.fields['start_hour'].choices = HOUR_CHOICES[16:48]
         return render(request, 'reservation-view.html', {'form': form, 'restaurant': restaurant,
                                                          'user': active_user})
 
@@ -146,8 +146,9 @@ def add_restaurant(request):
             pt_sob_end = form.cleaned_data['pt_sob_end']
             nd_start = form.cleaned_data['nd_start']
             nd_end = form.cleaned_data['nd_end']
+            active = form.cleaned_data['active']
             # Tworzenie obiektów i zapisywanie ich w bazie:-------------
-            new_res = Restaurant(name=name, address=address, phone_number=phone_num, email=email)
+            new_res = Restaurant(name=name, address=address, phone_number=phone_num, email=email, active=active)
             new_res.save()
             new_res_pon_czw = Hours(restaurant_id=new_res.id, day=1, open_hour=pon_czw_start, close_hour=pon_czw_end)
             new_res_pon_czw.save()
@@ -160,7 +161,7 @@ def add_restaurant(request):
             return render(request, "edit-restaurant.html", {'err': msg})
 
     else:
-        form = ModifyRestaurantForm()
+        form = ModifyRestaurantForm(initial={'active': True})
         return render(request, "edit-restaurant.html", {'form': form, 'button': "Dodaj"})
 
 
@@ -172,6 +173,7 @@ def edit_restaurant(request, restaurant_id):
     res_nd = Hours.objects.get(restaurant_id=restaurant_id, day=3)
     if request.method == 'POST':
         form = ModifyRestaurantForm(request.POST)
+        form.fields['active'].required = False
         if form.is_valid():
             # Dane restauracji:------------------------------------
             name = form.cleaned_data['name']
@@ -185,11 +187,13 @@ def edit_restaurant(request, restaurant_id):
             pt_sob_end = form.cleaned_data['pt_sob_end']
             nd_start = form.cleaned_data['nd_start']
             nd_end = form.cleaned_data['nd_end']
+            active = form.cleaned_data['active']
             # Edycja bazy danych:----------------------------------
             res.name = name
             res.address = address
             res.phone_number = phone_num
             res.email = email
+            res.active = active
             res.save()
             res_pon_czw.open_hour = pon_czw_start
             res_pon_czw.close_hour = pon_czw_end
@@ -214,7 +218,8 @@ def edit_restaurant(request, restaurant_id):
             'pt_sob_start': res_pt_sob.open_hour,
             'pt_sob_end': res_pt_sob.close_hour,
             'nd_start': res_nd.open_hour,
-            'nd_end': res_nd.close_hour
+            'nd_end': res_nd.close_hour,
+            'active': res.active
         }
         form = ModifyRestaurantForm(initial=initials)
         return render(request, "edit-restaurant.html", {'form': form, 'button': "Edytuj"})

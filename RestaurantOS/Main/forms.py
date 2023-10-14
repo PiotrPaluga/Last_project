@@ -33,6 +33,7 @@ class ModifyRestaurantForm(forms.Form):
     pt_sob_end = forms.ChoiceField(choices=HOUR_CHOICES)
     nd_start = forms.ChoiceField(label='Godziny otwarcia Nd', choices=HOUR_CHOICES)
     nd_end = forms.ChoiceField(choices=HOUR_CHOICES)
+    active = forms.BooleanField(label='Restauracja aktywna', required=False)
 
 
 class TableEditForm(forms.Form):

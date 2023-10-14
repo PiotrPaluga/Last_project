@@ -4,7 +4,7 @@ from .models import Restaurant, Tables, Reservation, Hours
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ("name", "address")
+    list_display = ("name", "address", "active")
 
 
 @admin.register(Tables)

@@ -8,10 +8,16 @@
         <p>Pon - Czw: {{ hours.0 }} - {{ hours.1 }}</p>
         <p>Pt - Sob: {{ hours.2 }} - {{ hours.3 }}</p>
         <p>Nd: {{ hours.4 }} - {{ hours.5 }}</p>
+
         {% if user.is_superuser %}
         <a href="/restaurant/{{ restaurant.id }}/tables" class="btn">Zarządzaj stolikami</a>
         {% endif %}
+
+        {% if user.is_active %}
         <a href="/restaurant/{{ restaurant.id }}/reservation" class="btn reserv-btn">Zarezerwuj Stolik</a>
+        {% else %}
+        <a href="/login/" class="btn reserv-btn">Zarezerwuj Stolik</a>
+        {% endif %}
     </div>
     <div class="res-view-right">
         <h3>Dane kontaktowe:</h3>
